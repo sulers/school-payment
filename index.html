@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#2563eb" />
+    <title>School Payment Management System</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🏫 School Payment Management System</h1>
+        <p>Track and manage student payments efficiently</p>
+
+        <div class="header-controls">
+          <div class="controls">
+            <button class="btn btn-primary" onclick="openAddClassModal()">
+              <span>+</span> Add Class
+            </button>
+            <button class="btn btn-success" onclick="openAddStudentModal()">
+              <span>+</span> Add Student
+            </button>
+            <button class="btn btn-warning" onclick="openSetupModal()">
+              ⚙️ Setup Fee
+            </button>
+          </div>
+
+          <div class="school-info">
+            <div id="currentDate"></div>
+            <div id="monthlyFeeDisplay">Monthly Fee: 💵0.00</div>
+          </div>
+        </div>
+      </header>
+
+      <div class="filters">
+        <div class="filter-group">
+          <label for="classFilter">Filter by Class</label>
+          <select id="classFilter" onchange="filterStudents()">
+            <option value="">All Classes</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="paymentFilter">Filter by Payment Status</label>
+          <select id="paymentFilter" onchange="filterStudents()">
+            <option value="">All Students</option>
+            <option value="paid">Fully Paid</option>
+            <option value="unpaid">Has Unpaid Months</option>
+            <option value="partial">Partially Paid</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="searchFilter">Search Student</label>
+          <input
+            type="text"
+            id="searchFilter"
+            placeholder="Enter student name..."
+            onkeyup="filterStudents()"
+          />
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Total Students</h3>
+            <div class="value" id="totalStudents">0</div>
+          </div>
+          <div class="stat-icon">👥</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Total Revenue</h3>
+            <div class="value" id="totalRevenue">💵0.00</div>
+          </div>
+          <div class="stat-icon">💰</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Unpaid Amount</h3>
+            <div class="value" id="unpaidAmount">💵0.00</div>
+          </div>
+          <div class="stat-icon">📊</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Active Classes</h3>
+            <div class="value" id="activeClasses">0</div>
+          </div>
+          <div class="stat-icon">🏫</div>
+        </div>
+      </div>
+
+      <div class="students-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Class</th>
+              <th>Months Owed</th>
+              <th>Total Paid</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentsTableBody">
+            <!-- Students will be populated here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Instructions Section -->
+      <div class="instructions">
+        <h3>📋 How to Use the System</h3>
+        <ul>
+          <li>
+            <strong>Setup:</strong> First, set the monthly fee using the Setup
+            Fee button
+          </li>
+          <li>
+            <strong>Add Classes:</strong> Create classes before adding students
+          </li>
+          <li>
+            <strong>Add Students:</strong> Register students with their name and
+            class
+          </li>
+          <li>
+            <strong>Mark Payments:</strong> Click on a student to view and mark
+            monthly payments
+          </li>
+          <li>
+            <strong>Payment Rule:</strong> Students cannot pay for next month
+            before previous month is paid
+          </li>
+          <li>
+            <strong>Filters:</strong> Use filters to find specific students or
+            payment status
+          </li>
+          <li>
+            <strong>Edit/Delete:</strong> Use action buttons to edit or delete
+            student records
+          </li>
+        </ul>
+        <p>
+          <strong>Note:</strong> All data is saved in your browser's local
+          storage
+        </p>
+      </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div id="studentModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Student Details</h2>
+          <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="student-info">
+            <div class="info-group">
+              <label>Student Name</label>
+              <h3 id="modalStudentName">-</h3>
+            </div>
+            <div class="info-group">
+              <label>Class</label>
+              <h3 id="modalStudentClass">-</h3>
+            </div>
+            <div class="info-group">
+              <label>Total Paid</label>
+              <h3 id="modalTotalPaid">💵0.00</h3>
+            </div>
+            <div class="info-group">
+              <label>Months Owed</label>
+              <h3 id="modalMonthsOwed">0 months</h3>
+            </div>
+          </div>
+
+          <h3>Monthly Payment Tracking</h3>
+          <p>
+            Click on a month to toggle payment status. Months must be paid in
+            order.
+          </p>
+
+          <div class="month-grid" id="monthGrid">
+            <!-- Months will be populated here -->
+          </div>
+
+          <div class="payment-summary">
+            <h3>Payment Summary</h3>
+            <div class="summary-grid">
+              <div class="info-group">
+                <label>Total Months</label>
+                <div id="totalMonths">0</div>
+              </div>
+              <div class="info-group">
+                <label>Paid Months</label>
+                <div id="paidMonths">0</div>
+              </div>
+              <div class="info-group">
+                <label>Unpaid Months</label>
+                <div id="unpaidMonths">0</div>
+              </div>
+              <div class="info-group">
+                <label>Total Due</label>
+                <div id="totalDue">💵0.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Add New Student</h2>
+          <button class="close-btn" onclick="closeAddStudentModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="studentName">Student Name</label>
+            <input
+              type="text"
+              id="studentName"
+              placeholder="Enter student name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="studentClass">Select Class</label>
+            <select id="studentClass">
+              <option value="">Select a class</option>
+            </select>
+          </div>
+
+          <div style="text-align: right; margin-top: 30px">
+            <button class="btn btn-primary" onclick="saveStudent()">
+              Save Student
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Class Modal -->
+    <div id="addClassModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Add New Class</h2>
+          <button class="close-btn" onclick="closeAddClassModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="className">Class Name</label>
+            <input
+              type="text"
+              id="className"
+              placeholder="Enter class name (e.g., Grade 5A)"
+            />
+          </div>
+
+          <div style="text-align: right; margin-top: 30px">
+            <button class="btn btn-primary" onclick="saveClass()">
+              Save Class
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Setup Modal -->
+    <div id="setupModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>System Setup</h2>
+          <button class="close-btn" onclick="closeSetupModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="monthlyFee">Monthly Fee Amount (💵)</label>
+            <input
+              type="number"
+              id="monthlyFee"
+              placeholder="Enter monthly fee"
+              min="0"
+              step="0.01"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="currentYear">Current Year</label>
+            <input
+              type="number"
+              id="currentYear"
+              value="2024"
+              min="2020"
+              max="2030"
+            />
+          </div>
+
+          <div class="instructions">
+            <h3>Important Notes:</h3>
+            <ul>
+              <li>Set the monthly fee that all students will pay</li>
+              <li>Payments are tracked from January to current month</li>
+              <li>
+                You can change the fee anytime, but it won't affect previous
+                payments
+              </li>
+              <li>Make sure to set the correct current year</li>
+            </ul>
+          </div>
+
+          <div style="text-align: right; margin-top: 30px">
+            <button class="btn btn-primary" onclick="saveSetup()">
+              Save Setup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit Student</h2>
+          <button class="close-btn" onclick="closeEditStudentModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="editStudentName">Student Name</label>
+            <input
+              type="text"
+              id="editStudentName"
+              placeholder="Enter student name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="editStudentClass">Select Class</label>
+            <select id="editStudentClass">
+              <option value="">Select a class</option>
+            </select>
+          </div>
+
+          <div style="text-align: right; margin-top: 30px">
+            <button
+              class="btn btn-danger"
+              onclick="deleteStudent()"
+              style="float: left"
+            >
+              Delete Student
+            </button>
+            <button class="btn btn-primary" onclick="updateStudent()">
+              Update Student
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Register service worker
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("service-worker.js")
+          .then(() => console.log("Service Worker Registered"))
+          .catch((err) => console.error("SW registration failed:", err));
+      }
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>
