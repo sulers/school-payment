@@ -436,3 +436,30 @@ window.onclick = function (event) {
     closeModal();
   }
 };
+
+function downloadLocalStorageAsJSON(filename = 'localStorage-backup.json') {
+  if (!navigator.onLine) {
+    alert('You must be online to download your data.');
+    return;
+  }
+
+  const data = {};
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    data[key] = localStorage.getItem(key);
+  }
+
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
