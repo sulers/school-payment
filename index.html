@@ -3,10 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#2563eb" />
     <title>School Payment Management System</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div class="container">
@@ -25,11 +23,38 @@
             <button class="btn btn-warning" onclick="openSetupModal()">
               ⚙️ Setup Fee
             </button>
+            <button class="btn btn-info" onclick="exportData()">
+              📥 Export Data
+            </button>
+            <button class="btn btn-purple" onclick="openImportModal()">
+              📤 Import Data
+            </button>
           </div>
 
           <div class="school-info">
             <div id="currentDate"></div>
             <div id="monthlyFeeDisplay">Monthly Fee: 💵0.00</div>
+            <div id="currentYearDisplay">Year: 2024</div>
+          </div>
+        </div>
+
+        <!-- Export Controls -->
+        <div class="export-controls">
+          <div class="filter-group">
+            <label for="dataFormat">Export Format:</label>
+            <select id="dataFormat">
+              <option value="full">Full Data (Backup)</option>
+              <option value="students">Students Only</option>
+              <option value="classes">Classes Only</option>
+              <option value="summary">Summary Report</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="includeStats">Include Stats:</label>
+            <select id="includeStats">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
           </div>
         </div>
       </header>
@@ -81,7 +106,7 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-info">
+          <div class="info-group">
             <h3>Unpaid Amount</h3>
             <div class="value" id="unpaidAmount">💵0.00</div>
           </div>
@@ -89,7 +114,7 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-info">
+          <div class="info-group">
             <h3>Active Classes</h3>
             <div class="value" id="activeClasses">0</div>
           </div>
@@ -135,8 +160,16 @@
             monthly payments
           </li>
           <li>
-            <strong>Payment Rule:</strong> Students cannot pay for next month
-            before previous month is paid
+            <strong>All 12 Months:</strong> Now you can track payments for all
+            12 months of the year
+          </li>
+          <li>
+            <strong>Export Data:</strong> Use the Export Data button to backup
+            all information
+          </li>
+          <li>
+            <strong>Import Data:</strong> Use the Import Data button to restore
+            from backup (new PC scenario)
           </li>
           <li>
             <strong>Filters:</strong> Use filters to find specific students or
@@ -149,8 +182,108 @@
         </ul>
         <p>
           <strong>Note:</strong> All data is saved in your browser's local
-          storage
+          storage. Export regularly for backup.
         </p>
+      </div>
+    </div>
+
+    <!-- Import Data Modal -->
+    <div id="importModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Import Data from Backup</h2>
+          <button class="close-btn" onclick="closeImportModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="file-upload" id="fileUploadArea">
+            <div
+              class="file-upload-label"
+              onclick="document.getElementById('fileInput').click()"
+            >
+              <div>📁</div>
+              <div>
+                <strong>Click to select backup file</strong>
+                <p>or drag and drop your JSON file here</p>
+              </div>
+            </div>
+            <input
+              type="file"
+              id="fileInput"
+              accept=".json"
+              onchange="handleFileSelect(event)"
+            />
+          </div>
+
+          <div id="fileInfo" style="display: none; margin-top: 20px">
+            <div class="form-group">
+              <label>Selected File:</label>
+              <div
+                id="fileName"
+                style="
+                  padding: 10px;
+                  background: var(--light);
+                  border-radius: 6px;
+                "
+              ></div>
+            </div>
+          </div>
+
+          <div
+            id="validationResult"
+            class="validation-message"
+            style="display: none"
+          ></div>
+
+          <div id="previewSection" style="display: none">
+            <h4>Data Preview:</h4>
+            <div class="preview-box" id="previewContent">
+              <!-- Preview will be shown here -->
+            </div>
+          </div>
+
+          <div id="importOptions" style="display: none; margin-top: 20px">
+            <h4>Import Options:</h4>
+            <div class="import-options">
+              <div
+                class="import-option"
+                onclick="selectImportOption('replace')"
+                id="replaceOption"
+              >
+                <h4>🔄 Replace All Data</h4>
+                <p>Clear all existing data and replace with imported data</p>
+              </div>
+              <div
+                class="import-option"
+                onclick="selectImportOption('merge')"
+                id="mergeOption"
+              >
+                <h4>🔀 Merge Data</h4>
+                <p>
+                  Keep existing data and add imported data (duplicates will be
+                  overwritten)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: right; margin-top: 30px">
+            <button
+              class="btn btn-danger"
+              onclick="closeImportModal()"
+              style="margin-right: 10px"
+            >
+              Cancel
+            </button>
+            <button
+              class="btn btn-success"
+              onclick="executeImport()"
+              id="importButton"
+              disabled
+            >
+              Import Data
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -181,14 +314,14 @@
             </div>
           </div>
 
-          <h3>Monthly Payment Tracking</h3>
+          <h3>Monthly Payment Tracking (All 12 Months)</h3>
           <p>
-            Click on a month to toggle payment status. Months must be paid in
-            order.
+            Click on any month to toggle payment status. All 12 months are
+            available for payment tracking.
           </p>
 
           <div class="month-grid" id="monthGrid">
-            <!-- Months will be populated here -->
+            <!-- All 12 months will be populated here -->
           </div>
 
           <div class="payment-summary">
@@ -309,7 +442,7 @@
             <h3>Important Notes:</h3>
             <ul>
               <li>Set the monthly fee that all students will pay</li>
-              <li>Payments are tracked from January to current month</li>
+              <li>Students are tracked for ALL 12 months of the year</li>
               <li>
                 You can change the fee anytime, but it won't affect previous
                 payments
@@ -366,18 +499,7 @@
         </div>
       </div>
     </div>
-    <button class="btn" onclick="downloadLocalStorageAsJSON()">
-  Download My Data
-</button>
-    <script>
-      // Register service worker
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker
-          .register("service-worker.js")
-          .then(() => console.log("Service Worker Registered"))
-          .catch((err) => console.error("SW registration failed:", err));
-      }
-    </script>
+
     <script src="script.js"></script>
   </body>
 </html>
