@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>School Payment Management System</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="container">
@@ -20,9 +20,6 @@
             <button class="btn btn-success" onclick="openAddStudentModal()">
               <span>+</span> Add Student
             </button>
-            <button class="btn btn-warning" onclick="openSetupModal()">
-              ⚙️ Setup Fee
-            </button>
             <button class="btn btn-info" onclick="exportData()">
               📥 Export Data
             </button>
@@ -33,8 +30,17 @@
 
           <div class="school-info">
             <div id="currentDate"></div>
-            <div id="monthlyFeeDisplay">Monthly Fee: 💵0.00</div>
-            <div id="currentYearDisplay">Year: 2024</div>
+            <div
+              id="totalEarnings"
+              class="stat-card"
+              style="
+                display: inline-block;
+                padding: 10px 15px;
+                margin-top: 10px;
+              "
+            >
+              <strong>Total Collected: 💵0.00</strong>
+            </div>
           </div>
         </div>
 
@@ -88,38 +94,9 @@
         </div>
       </div>
 
-      <div class="stats">
-        <div class="stat-card">
-          <div class="stat-info">
-            <h3>Total Students</h3>
-            <div class="value" id="totalStudents">0</div>
-          </div>
-          <div class="stat-icon">👥</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-info">
-            <h3>Total Revenue</h3>
-            <div class="value" id="totalRevenue">💵0.00</div>
-          </div>
-          <div class="stat-icon">💰</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="info-group">
-            <h3>Unpaid Amount</h3>
-            <div class="value" id="unpaidAmount">💵0.00</div>
-          </div>
-          <div class="stat-icon">📊</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="info-group">
-            <h3>Active Classes</h3>
-            <div class="value" id="activeClasses">0</div>
-          </div>
-          <div class="stat-icon">🏫</div>
-        </div>
+      <!-- Monthly Earnings Stats -->
+      <div class="stats" id="monthlyStats">
+        <!-- Monthly stats will be populated here -->
       </div>
 
       <div class="students-table">
@@ -128,7 +105,8 @@
             <tr>
               <th>Student Name</th>
               <th>Class</th>
-              <th>Months Owed</th>
+              <th>Monthly Fee</th>
+              <th>Paid Months</th>
               <th>Total Paid</th>
               <th>Status</th>
               <th>Actions</th>
@@ -145,10 +123,6 @@
         <h3>📋 How to Use the System</h3>
         <ul>
           <li>
-            <strong>Setup:</strong> First, set the monthly fee using the Setup
-            Fee button
-          </li>
-          <li>
             <strong>Add Classes:</strong> Create classes before adding students
           </li>
           <li>
@@ -156,12 +130,20 @@
             class
           </li>
           <li>
+            <strong>Set Individual Fees:</strong> Each student can have their
+            own monthly fee
+          </li>
+          <li>
             <strong>Mark Payments:</strong> Click on a student to view and mark
             monthly payments
           </li>
           <li>
-            <strong>All 12 Months:</strong> Now you can track payments for all
-            12 months of the year
+            <strong>All 12 Months:</strong> You can track payments for all 12
+            months of the year
+          </li>
+          <li>
+            <strong>Earnings by Month:</strong> See total collected for each
+            month at the top
           </li>
           <li>
             <strong>Export Data:</strong> Use the Export Data button to backup
@@ -169,7 +151,7 @@
           </li>
           <li>
             <strong>Import Data:</strong> Use the Import Data button to restore
-            from backup (new PC scenario)
+            from backup
           </li>
           <li>
             <strong>Filters:</strong> Use filters to find specific students or
@@ -181,8 +163,8 @@
           </li>
         </ul>
         <p>
-          <strong>Note:</strong> All data is saved in your browser's local
-          storage. Export regularly for backup.
+          <strong>Note:</strong> When updating fees, old paid months keep their
+          original amount for accurate accounting.
         </p>
       </div>
     </div>
@@ -192,7 +174,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2>Import Data from Backup</h2>
-          <button class="close-btn" onclick="closeImportModal()">×</button>
+          <button class="close-btn" onclick="closeModal('importModal')">
+            ×
+          </button>
         </div>
         <div class="modal-body">
           <div class="file-upload" id="fileUploadArea">
@@ -258,10 +242,7 @@
                 id="mergeOption"
               >
                 <h4>🔀 Merge Data</h4>
-                <p>
-                  Keep existing data and add imported data (duplicates will be
-                  overwritten)
-                </p>
+                <p>Keep existing data and add imported data</p>
               </div>
             </div>
           </div>
@@ -269,7 +250,7 @@
           <div style="text-align: right; margin-top: 30px">
             <button
               class="btn btn-danger"
-              onclick="closeImportModal()"
+              onclick="closeModal('importModal')"
               style="margin-right: 10px"
             >
               Cancel
@@ -292,7 +273,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2 id="modalTitle">Student Details</h2>
-          <button class="close-btn" onclick="closeModal()">×</button>
+          <button class="close-btn" onclick="closeModal('studentModal')">
+            ×
+          </button>
         </div>
         <div class="modal-body">
           <div class="student-info">
@@ -305,45 +288,31 @@
               <h3 id="modalStudentClass">-</h3>
             </div>
             <div class="info-group">
+              <label>Monthly Fee</label>
+              <div class="fee-input-container">
+                <input
+                  type="number"
+                  id="studentMonthlyFee"
+                  min="0"
+                  step="0.01"
+                  placeholder="Enter monthly fee"
+                />
+                <button class="btn btn-primary" onclick="updateStudentFee()">
+                  Update
+                </button>
+              </div>
+            </div>
+            <div class="info-group">
               <label>Total Paid</label>
               <h3 id="modalTotalPaid">💵0.00</h3>
             </div>
-            <div class="info-group">
-              <label>Months Owed</label>
-              <h3 id="modalMonthsOwed">0 months</h3>
-            </div>
           </div>
 
-          <h3>Monthly Payment Tracking (All 12 Months)</h3>
-          <p>
-            Click on any month to toggle payment status. All 12 months are
-            available for payment tracking.
-          </p>
+          <h4>Monthly Payment Tracking</h4>
+          <p>Click on any month to toggle payment status.</p>
 
           <div class="month-grid" id="monthGrid">
             <!-- All 12 months will be populated here -->
-          </div>
-
-          <div class="payment-summary">
-            <h3>Payment Summary</h3>
-            <div class="summary-grid">
-              <div class="info-group">
-                <label>Total Months</label>
-                <div id="totalMonths">0</div>
-              </div>
-              <div class="info-group">
-                <label>Paid Months</label>
-                <div id="paidMonths">0</div>
-              </div>
-              <div class="info-group">
-                <label>Unpaid Months</label>
-                <div id="unpaidMonths">0</div>
-              </div>
-              <div class="info-group">
-                <label>Total Due</label>
-                <div id="totalDue">💵0.00</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -354,7 +323,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2>Add New Student</h2>
-          <button class="close-btn" onclick="closeAddStudentModal()">×</button>
+          <button class="close-btn" onclick="closeModal('addStudentModal')">
+            ×
+          </button>
         </div>
         <div class="modal-body">
           <div class="form-group">
@@ -373,7 +344,19 @@
             </select>
           </div>
 
-          <div style="text-align: right; margin-top: 30px">
+          <div class="form-group">
+            <label for="initialFee">Monthly Fee (💵)</label>
+            <input
+              type="number"
+              id="initialFee"
+              min="0"
+              step="0.01"
+              value="20000"
+              placeholder="Enter monthly fee"
+            />
+          </div>
+
+          <div style="text-align: right; margin-top: 20px">
             <button class="btn btn-primary" onclick="saveStudent()">
               Save Student
             </button>
@@ -387,7 +370,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2>Add New Class</h2>
-          <button class="close-btn" onclick="closeAddClassModal()">×</button>
+          <button class="close-btn" onclick="closeModal('addClassModal')">
+            ×
+          </button>
         </div>
         <div class="modal-body">
           <div class="form-group">
@@ -399,61 +384,9 @@
             />
           </div>
 
-          <div style="text-align: right; margin-top: 30px">
+          <div style="text-align: right; margin-top: 20px">
             <button class="btn btn-primary" onclick="saveClass()">
               Save Class
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Setup Modal -->
-    <div id="setupModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>System Setup</h2>
-          <button class="close-btn" onclick="closeSetupModal()">×</button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="monthlyFee">Monthly Fee Amount (💵)</label>
-            <input
-              type="number"
-              id="monthlyFee"
-              placeholder="Enter monthly fee"
-              min="0"
-              step="0.01"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="currentYear">Current Year</label>
-            <input
-              type="number"
-              id="currentYear"
-              value="2024"
-              min="2020"
-              max="2030"
-            />
-          </div>
-
-          <div class="instructions">
-            <h3>Important Notes:</h3>
-            <ul>
-              <li>Set the monthly fee that all students will pay</li>
-              <li>Students are tracked for ALL 12 months of the year</li>
-              <li>
-                You can change the fee anytime, but it won't affect previous
-                payments
-              </li>
-              <li>Make sure to set the correct current year</li>
-            </ul>
-          </div>
-
-          <div style="text-align: right; margin-top: 30px">
-            <button class="btn btn-primary" onclick="saveSetup()">
-              Save Setup
             </button>
           </div>
         </div>
@@ -465,7 +398,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2>Edit Student</h2>
-          <button class="close-btn" onclick="closeEditStudentModal()">×</button>
+          <button class="close-btn" onclick="closeModal('editStudentModal')">
+            ×
+          </button>
         </div>
         <div class="modal-body">
           <div class="form-group">
@@ -484,7 +419,7 @@
             </select>
           </div>
 
-          <div style="text-align: right; margin-top: 30px">
+          <div style="text-align: right; margin-top: 20px">
             <button
               class="btn btn-danger"
               onclick="deleteStudent()"
@@ -499,6 +434,9 @@
         </div>
       </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
 
     <script src="script.js"></script>
   </body>

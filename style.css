@@ -8,41 +8,41 @@
 :root {
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
-  --secondary: #10b981;
-  --danger: #ef4444;
+  --secondary: #16a34a;
+  --danger: #dc2626;
   --warning: #f59e0b;
-  --light: #f8fafc;
-  --dark: #1e293b;
+  --light: #f3f4f6;
+  --dark: #1f2937;
   --gray: #64748b;
   --gray-light: #e2e8f0;
+  --bg: #f3f4f6;
+  --card: #ffffff;
+  --radius: 12px;
 }
 
 body {
-  background-color: #f1f5f9;
+  background-color: var(--bg);
   color: var(--dark);
   min-height: 100vh;
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
 header {
-  background: white;
+  background: var(--card);
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
 }
 
 h1 {
   color: var(--primary);
   margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .header-controls {
@@ -57,7 +57,7 @@ h1 {
 .btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s;
@@ -107,11 +107,11 @@ h1 {
 }
 
 .filters {
-  background: white;
+  background: var(--card);
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 25px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
@@ -132,59 +132,57 @@ label {
 
 select,
 input[type="text"],
+input[type="number"],
 input[type="file"] {
   padding: 10px;
   border: 2px solid var(--gray-light);
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 14px;
   min-width: 200px;
 }
 
 select:focus,
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="number"]:focus {
   outline: none;
   border-color: var(--primary);
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .stat-card {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background: var(--card);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
 }
 
-.stat-info h3 {
+.stat-card h3 {
   color: var(--gray);
-  font-size: 14px;
-  margin-bottom: 5px;
+  font-size: 12px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.stat-info .value {
-  font-size: 32px;
+.stat-card .value {
+  font-size: 24px;
   font-weight: 700;
   color: var(--dark);
 }
 
-.stat-icon {
-  font-size: 40px;
-  color: var(--primary);
-}
-
 .students-table {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  margin-bottom: 20px;
 }
 
 table {
@@ -194,7 +192,7 @@ table {
 
 th {
   background-color: var(--light);
-  padding: 15px;
+  padding: 12px;
   text-align: left;
   font-weight: 600;
   color: var(--dark);
@@ -202,7 +200,7 @@ th {
 }
 
 td {
-  padding: 15px;
+  padding: 12px;
   border-bottom: 1px solid var(--gray-light);
 }
 
@@ -212,10 +210,10 @@ tr:hover {
 
 .status-indicator {
   display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  margin-right: 8px;
+  margin-right: 6px;
 }
 
 .status-paid {
@@ -236,9 +234,9 @@ tr:hover {
 }
 
 .action-btn {
-  padding: 5px 10px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
@@ -254,18 +252,16 @@ tr:hover {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .modal-content {
-  background: white;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
+  background: var(--card);
+  padding: 20px;
+  border-radius: var(--radius);
+  width: 400px;
+  max-width: 95%;
 }
 
 .modal-header {
@@ -289,88 +285,60 @@ tr:hover {
 }
 
 .student-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .info-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-bottom: 15px;
+}
+
+.fee-input-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.fee-input-container input {
+  flex: 1;
 }
 
 .month-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
-  margin-top: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .month-box {
-  padding: 15px;
+  padding: 12px;
   border-radius: 8px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s;
   user-select: none;
+  font-size: 14px;
 }
 
 .month-box.paid {
-  background-color: #d1fae5;
+  background-color: #bbf7d0;
   color: #065f46;
-  border: 2px solid var(--secondary);
 }
 
 .month-box.unpaid {
   background-color: #fee2e2;
   color: #991b1b;
-  border: 2px solid var(--danger);
 }
 
-.month-box.paid:hover {
-  background-color: #a7f3d0;
-}
-
-.month-box.unpaid:hover {
-  background-color: #fecaca;
-}
-
-.month-box.disabled {
-  background-color: #f1f5f9;
-  color: #94a3b8;
-  cursor: not-allowed;
-  border: 2px solid #e2e8f0;
-}
-
-.month-name {
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.month-status {
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.payment-summary {
-  background-color: var(--light);
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 30px;
-}
-
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-top: 15px;
+.month-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .form-group label {
@@ -383,14 +351,14 @@ tr:hover {
   width: 100%;
   padding: 10px;
   border: 2px solid var(--gray-light);
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .file-upload {
   border: 2px dashed var(--gray-light);
   padding: 40px;
   text-align: center;
-  border-radius: 8px;
+  border-radius: var(--radius);
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -410,11 +378,6 @@ tr:hover {
   align-items: center;
   gap: 10px;
   cursor: pointer;
-}
-
-.file-upload-label i {
-  font-size: 48px;
-  color: var(--primary);
 }
 
 .preview-box {
@@ -492,7 +455,7 @@ tr:hover {
   background-color: #fef3c7;
   border-left: 4px solid var(--warning);
   padding: 20px;
-  margin-top: 30px;
+  margin-top: 20px;
   border-radius: 0 8px 8px 0;
 }
 
@@ -515,6 +478,24 @@ tr:hover {
   display: flex;
   gap: 10px;
   margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--primary);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: 0.3s;
+  z-index: 10000;
+}
+
+.toast.show {
+  opacity: 1;
 }
 
 @media (max-width: 768px) {
@@ -523,12 +504,8 @@ tr:hover {
     align-items: flex-start;
   }
 
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .student-info {
-    grid-template-columns: 1fr;
+  .filters {
+    flex-direction: column;
   }
 
   .export-controls {
@@ -537,5 +514,9 @@ tr:hover {
 
   .import-options {
     flex-direction: column;
+  }
+
+  .month-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
